@@ -210,6 +210,19 @@ function randomnessPenalty(raw: string, tokens: string[]) {
   if (letters > 0 && upper / letters > 0.7) penalty += 0.5; // shouty caps
   return Math.min(4, Number(penalty.toFixed(2)));
 }
+// Penalize names that are too long (more than 6 words)
+function longNamePenalty(tokens: string[]) {
+  const n = tokens.length;
+  if (n <= 6) return 0;
+
+  const over = n - 6;
+  // Linear ramp: 0.6 per extra word beyond 6 (7 words = 0.6, 8 = 1.2, etc.)
+  const penalty = 0.6 * over;
+
+  // Keep style consistent with other penalties: round & cap
+  return Math.min(4, Number(penalty.toFixed(2)));
+}
+
 
 // --- Bouba/Kiki + style matching -------------------------------------------
 
@@ -320,6 +333,7 @@ function scoreBand(
   neg += descriptorPenalty(tokens);
   neg += juvenilePenalty(tokens);
   neg += randomnessPenalty(name, tokens);
+  neg += longNamePenalty(tokens);
 
   // Gentle positive bias without touching negatives
   const POS_MULT = 1.12; // ~+12% to positive attributes
