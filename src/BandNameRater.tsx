@@ -118,7 +118,7 @@ function looksLikePersonalNameStrict(raw: string) {
     "sanchez","clark","lewis","robinson","walker","young","allen","king","wright",
     "scott","torres","nguyen","hill","flores","green","adams","nelson","baker","hall",
     "rivera","campbell","mitchell","carter","roberts","mars","delrey","knowles",
-    "grande","lovato","bieber","eilish",
+    "grande","lovato","bieber","eilish","daniels",
     // Added per request
     "carey","dinardo","henson","fair","mullin","mikaelson","gunther","sharayah","sakach"
   ]);
