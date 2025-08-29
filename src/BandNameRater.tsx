@@ -234,7 +234,10 @@ function nonsensePenalty(raw: string, tokens: string[]) {
     "maroon 5",
     "the black eyed peas",
     "black eyed peas",
-    "coldplay"
+    "coldplay",
+    "tool"'
+    "red hot chili peppers",
+    "the red hot chili peppers"
   ]);
   if (ODD_PHRASES.has(phrase)) penalty += 1.5;
 
