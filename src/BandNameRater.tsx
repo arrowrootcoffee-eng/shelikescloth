@@ -235,8 +235,6 @@ function nonsensePenalty(raw: string, tokens: string[]) {
     "the black eyed peas",
     "black eyed peas",
     "coldplay"
-    "red hot chili peppers"
-    "tool"
   ]);
   if (ODD_PHRASES.has(phrase)) penalty += 1.5;
 
@@ -265,7 +263,6 @@ function nonsensePenalty(raw: string, tokens: string[]) {
   // Keep consistent with your other penalties
   return Math.min(4, Number(penalty.toFixed(2)));
 }
-
 
 // --- Bouba/Kiki + style matching -------------------------------------------
 
