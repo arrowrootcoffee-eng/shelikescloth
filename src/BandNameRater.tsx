@@ -157,7 +157,7 @@ function homophoneBoost(raw: string, tokens: string[]) {
   let boost = 0;
 
   // A few known homophone-y forms (exact-ish)
-  const KNOWN = new Set(["eminem", "bbno$", "katseye", "catseye"]);
+  const KNOWN = new Set(["eminem", "bbno$", "katseye", "catseye", "bilmuri"]);
   if (KNOWN.has(nospace)) boost += 0.9;
 
   // "Eminem" pattern: looks like EM ... EM (M&M)
