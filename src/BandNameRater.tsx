@@ -222,6 +222,49 @@ function longNamePenalty(tokens: string[]) {
   // Keep style consistent with other penalties: round & cap
   return Math.min(4, Number(penalty.toFixed(2)));
 }
+// Penalize names that feel semantically odd (e.g., "Maroon 5", "The Black Eyed Peas", "Coldplay")
+function nonsensePenalty(raw: string, tokens: string[]) {
+  let penalty = 0;
+
+  // Normalize a phrase version for exact phrase checks
+  const phrase = tokens.join(" "); // already lowercase if you're using your tokenize()
+
+  // Targeted odd phrases (exact matches, lowercase)
+  const ODD_PHRASES = new Set([
+    "maroon 5",
+    "the black eyed peas",
+    "black eyed peas",
+    "coldplay"
+    "red hot chili peppers"
+    "tool"
+  ]);
+  if (ODD_PHRASES.has(phrase)) penalty += 1.5;
+
+  // Pattern: color + number anywhere (e.g., "maroon 5", "blue 7")
+  const COLORS = new Set([
+    "black","white","red","blue","green","yellow","purple","pink","orange","maroon","teal","indigo","violet","silver","gold"
+  ]);
+  const hasColor = tokens.some((t) => COLORS.has(t));
+  const hasNumber = tokens.some((t) => /\d/.test(t));
+  if (hasColor && hasNumber) penalty += 1.0;
+
+  // Pattern: single-word “weird compound” like "coldplay" (adjective+generic-noun stuck together)
+  // Kept narrow to avoid false positives.
+  if (tokens.length === 1) {
+    const t = tokens[0];
+    const prefixAdj = ["cold","blue","black","white","red","green","pink"];
+    const suffixNouns = ["play","work","sound","music","thing","stuff"];
+    const looksCompound =
+      prefixAdj.some((p) => t.startsWith(p)) &&
+      suffixNouns.some((s) => t.endsWith(s)) &&
+      t.length >= 7; // avoid short coincidences
+
+    if (looksCompound) penalty += 0.8;
+  }
+
+  // Keep consistent with your other penalties
+  return Math.min(4, Number(penalty.toFixed(2)));
+}
 
 
 // --- Bouba/Kiki + style matching -------------------------------------------
@@ -334,6 +377,7 @@ function scoreBand(
   neg += juvenilePenalty(tokens);
   neg += randomnessPenalty(name, tokens);
   neg += longNamePenalty(tokens);
+  neg += nonsensePenalty(name, tokens);
 
   // Gentle positive bias without touching negatives
   const POS_MULT = 1.12; // ~+12% to positive attributes
