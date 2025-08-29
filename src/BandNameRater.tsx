@@ -148,6 +148,43 @@ function isTwoWordBandName(raw: string) {
   if (!parts.every((p) => /^[A-Za-z]+$/.test(p))) return false;
   return !looksLikePersonalNameStrict(raw);
 }
+// Homophone / letter-speak / stylized spelling boost
+function homophoneBoost(raw: string, tokens: string[]) {
+  const s = raw.trim();
+  const low = s.toLowerCase();
+  const nospace = low.replace(/[\s'’.-]/g, "");
+
+  let boost = 0;
+
+  // A few known homophone-y forms (exact-ish)
+  const KNOWN = new Set(["eminem", "bbno$", "katseye", "catseye"]);
+  if (KNOWN.has(nospace)) boost += 0.9;
+
+  // "Eminem" pattern: looks like EM ... EM (M&M)
+  if (/^em.*em$/.test(low.replace(/[^a-z]/g, ""))) boost += 0.6;
+
+  // Currency symbol used as "money" (e.g., bbno$)
+  if (/[€£¥$]/.test(s)) {
+    // Stronger if "...no$" or "...no<currency>" occurs (reads "no money")
+    if (/no[^\w]*[€£¥$]/i.test(low)) boost += 0.6;
+    else boost += 0.3;
+  }
+
+  // Embedded digit used as a word sound (2=to/too, 4=for, 8=ate),
+  // only when it's *embedded* in letters (avoids "color + number" cases)
+  if (/(?:[a-z])(2|4|8)(?:[a-z])/i.test(low)) boost += 0.5;
+
+  // Letter-name words / obvious sound-alikes (EYE, WHY, CEE, etc.)
+  if (/\b(eye|why|cee|kay|jay|tee|bee|you|u|are|r|ex|x)\b/i.test(low)) boost += 0.4;
+  // Or single-word ending/containing "eye" (KATSEYE / CATSEYE)
+  if (/^[a-z]*eye$/i.test(low) || /[a-z]+eye$/i.test(low)) boost += 0.4;
+
+  // Leading double-letter stylization (e.g., bbno$)
+  if (/^([a-z])\1[a-z0-9$]+/i.test(low)) boost += 0.3;
+
+  // Cap and tidy
+  return Math.max(0, Math.min(1.8, Number(boost.toFixed(2))));
+}
 
 // --- Descriptor uniqueness after "the" -------------------------------------
 
@@ -235,7 +272,7 @@ function nonsensePenalty(raw: string, tokens: string[]) {
     "the black eyed peas",
     "black eyed peas",
     "coldplay",
-    "tool"'
+    "tool",
     "red hot chili peppers",
     "the red hot chili peppers"
   ]);
@@ -358,6 +395,7 @@ function scoreBand(
   // Positive structure/shape bonuses
   if (isTwoWordBandName(name)) pos += 0.4;
   if (hasTheSandwich(name)) pos += 1.5;
+  pos += homophoneBoost(name, tokens);
 
   // Descriptor uniqueness can be positive OR negative; split it so negatives aren't scaled
   const descRaw = descriptorUniquenessBoost(tokens);
