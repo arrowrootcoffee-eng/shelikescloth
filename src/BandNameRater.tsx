@@ -191,6 +191,30 @@ function homophoneBoost(raw: string, tokens: string[]) {
 function hasTheSandwich(raw: string) {
   return /\b\w+[\w.'-]*\s+the\s+\w+/i.test(raw);
 }
+// Adds a small extra boost if the word before "the" looks like a place/proper noun.
+// Ex: "Portugal the Man" gets a bump on top of the regular hasTheSandwich bonus.
+function theSandwichContextBoost(raw: string, tokens: string[]) {
+  if (!hasTheSandwich(raw)) return 0;
+
+  const idx = tokens.indexOf("the");
+  if (idx <= 0) return 0; // no word before "the"
+  const before = tokens[idx - 1]; // tokens are already lowercased by tokenize()
+
+  // Expand this list as you like; keep lowercase.
+  const PLACE_HINTS = new Set([
+    // Countries/regions
+    "portugal","america","england","france","spain","italy","germany","ireland","scotland",
+    "mexico","canada","brazil","peru","chile","argentina","egypt","india","china","japan",
+    "korea","vietnam","poland","norway","sweden","finland",
+    // Cities (a small starter set)
+    "lisbon","paris","london","berlin","madrid","rome","tokyo","seoul","oslo"
+  ]);
+
+  // Note: tokenize() strips punctuation, so "Portugal." becomes "portugal".
+  if (PLACE_HINTS.has(before)) return 0.4; // tweak 0.2–0.6 to taste
+
+  return 0;
+}
 
 function descriptorAfterThe(tokens: string[]) {
   const idx = tokens.indexOf("the");
@@ -396,6 +420,7 @@ function scoreBand(
   if (isTwoWordBandName(name)) pos += 0.4;
   if (hasTheSandwich(name)) pos += 1.5;
   pos += homophoneBoost(name, tokens);
+  pos += theSandwichContextBoost(name, tokens);
 
   // Descriptor uniqueness can be positive OR negative; split it so negatives aren't scaled
   const descRaw = descriptorUniquenessBoost(tokens);
