@@ -418,7 +418,7 @@ function scoreBand(
   neg += nonsensePenalty(name, tokens);
 
   // Gentle positive bias without touching negatives
-  const POS_MULT = 1.12; // ~+12% to positive attributes
+  const POS_MULT = 1.17; // ~+17% to positive attributes
   let score = 5 + POS_MULT * pos - neg;
 
   return Math.max(0, Math.min(10, Number(score.toFixed(2))));
