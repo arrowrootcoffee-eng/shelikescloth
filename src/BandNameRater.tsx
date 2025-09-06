@@ -21,6 +21,7 @@ const DESCRIPTOR_WORDS = [
   "with",
   "dj",
   "mc",
+  "the",
 ];
 
 const JUVENILE_WORDS = [
