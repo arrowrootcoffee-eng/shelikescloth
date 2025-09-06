@@ -345,16 +345,16 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Pop/K-Pop: favor soft/round, playful/cute, color pairings, compact names, repeated letters
   if (genre === "Pop") {
-    if (softn >= harschn) boost += 0.6;
+    if (softn >= harschn) boost += 0.8;
     if (name.trim().split(/\s+/).length <= 2) boost += 0.3;
     if (/(.)\1/.test(name)) boost += 0.2;
   }
   if (genre === "K-Pop") {
     if (softn >= harschn) boost += 0.6;
     const hasColors = tokens.some((t) => COLOR_WORDS.has(t));
-    if (hasColors && /pink/i.test(name)) boost += 0.6;
-    if (name.trim().split(/\s+/).length <= 2) boost += 0.3;
-    if (/(.)\1/.test(name)) boost += 0.2;
+    if (hasColors && /pink/i.test(name)) boost += 0.7;
+    if (name.trim().split(/\s+/).length <= 2) boost += 0.4;
+    if (/(.)\1/.test(name)) boost += 0.3;
   }
   // Indie/Alt: rewards "___ the ___" and gentle phonetics
   if (genre === "Indie/Alt") {
@@ -369,10 +369,11 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (name.replace(/[^a-z]/gi, "").length >= 6) boost += 0.2;
   }
 
-  // Math Rock: numbers, hyphens, geometric/technical vibe
+  // Punk: numbers, hyphens, geometric/technical vibe
   if (genre === "Punk") {
     if (/[0-9]/.test(name)) boost += 0.6;
     if(/[\-_/]/.test(name)) boost += 0.3;
+    if (/(anarchy|radical|punk|spike|leather|anti|hair)/i.test(name)) boost += 1.3;
     if ((name.match(/[tkpqxz]/gi)?.length ?? 0) >= 2) boost += 0.4;
   }
 
