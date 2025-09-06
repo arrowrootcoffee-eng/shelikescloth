@@ -103,7 +103,7 @@ function looksLikePersonalNameStrict(raw: string) {
     "luke","harry","lewis","alex","alexander","nathan","scott","bruno","chris",
     "christopher","tyler","chance","taylor","adele","beyonce","lana","billie",
     "olivia","emma","sarah","sara","anna","bella","kate","katie","amy","mary",
-    "jane","emily","ella","megan","ariana","selena","kylie",
+    "jane","emily","ella","megan","ariana","selena","kylie","the",
     // Added per request
     "mariah","jacob","amanda","rae","manny","carrie","jacqueline","jac","saif","mitch","dani"
   ]);
