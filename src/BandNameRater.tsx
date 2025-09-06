@@ -161,23 +161,23 @@ function homophoneBoost(raw: string, tokens: string[]) {
   if (KNOWN.has(nospace)) boost += 0.9;
 
   // "Eminem" pattern: looks like EM ... EM (M&M)
-  if (/^em.*em$/.test(low.replace(/[^a-z]/g, ""))) boost += 0.6;
+  if (/^em.*em$/.test(low.replace(/[^a-z]/g, ""))) boost += 1.7;
 
   // Currency symbol used as "money" (e.g., bbno$)
   if (/[€£¥$]/.test(s)) {
     // Stronger if "...no$" or "...no<currency>" occurs (reads "no money")
-    if (/no[^\w]*[€£¥$]/i.test(low)) boost += 0.6;
+    if (/no[^\w]*[€£¥$]/i.test(low)) boost += 0.8;
     else boost += 0.3;
   }
 
   // Embedded digit used as a word sound (2=to/too, 4=for, 8=ate),
   // only when it's *embedded* in letters (avoids "color + number" cases)
-  if (/(?:[a-z])(2|4|8)(?:[a-z])/i.test(low)) boost += 0.5;
+  if (/(?:[a-z])(2|4|8)(?:[a-z])/i.test(low)) boost += 0.7;
 
   // Letter-name words / obvious sound-alikes (EYE, WHY, CEE, etc.)
-  if (/\b(eye|why|cee|kay|jay|tee|bee|you|u|are|r|ex|x)\b/i.test(low)) boost += 0.4;
+  if (/\b(eye|why|cee|kay|jay|tee|bee|you|u|are|r|ex|x)\b/i.test(low)) boost += 0.5;
   // Or single-word ending/containing "eye" (KATSEYE / CATSEYE)
-  if (/^[a-z]*eye$/i.test(low) || /[a-z]+eye$/i.test(low)) boost += 0.4;
+  if (/^[a-z]*eye$/i.test(low) || /[a-z]+eye$/i.test(low)) boost += 0.6;
 
   // Leading double-letter stylization (e.g., bbno$)
   if (/^([a-z])\1[a-z0-9$]+/i.test(low)) boost += 0.3;
@@ -234,11 +234,11 @@ function descriptorUniquenessBoost(tokens: string[]) {
   const d = descriptorAfterThe(tokens);
   if (!d) return 0;
   const desc = d.toLowerCase();
-  if (GENERIC_ROLE.has(desc)) return -0.6; // stronger penalty for generic
+  if (GENERIC_ROLE.has(desc)) return -0.7; // stronger penalty for generic
   let boost = 0;
   if (CREATIVE_ROLE.has(desc)) boost += 0.9; // slightly stronger for unique
   if (/(or|ist|ian|eer|eur|wright|smith|maker|mancer)$/.test(desc)) boost += 0.5;
-  if (desc.length >= 6) boost += 0.2;
+  if (desc.length >= 6) boost += 0.3;
   return Math.max(-1.0, Math.min(1.2, Number(boost.toFixed(2))));
 }
 
@@ -353,13 +353,13 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Indie/Alt: rewards "___ the ___" and gentle phonetics
   if (genre === "Indie/Alt") {
-    if (hasTheSandwich(name)) boost += 0.6;
-    if (softn >= harschn) boost += 0.2;
+    if (hasTheSandwich(name)) boost += 0.8;
+    if (softn >= harschn) boost += 0.4;
   }
 
   // Metal/Rock: prefer harsh phonemes, darker words, longer/weightier looks
   if (genre === "Metal" || genre === "Rock") {
-    if (harschn > softn) boost += 0.6;
+    if (harschn > softn) boost += 1.3;
     if (/(black|doom|blood|void|skull|wrath|masto|mastodon)/i.test(name)) boost += 0.6;
     if (name.replace(/[^a-z]/gi, "").length >= 6) boost += 0.2;
   }
@@ -373,21 +373,24 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Hip Hop: short/stylized structures
   if (genre === "Hip Hop") {
-    if (/\b(lil|big|yung|young|da|tha)\b/i.test(name)) boost += 0.6;
-    if (name.trim().split(/\s+/).length <= 3) boost += 0.2;
+    if (/\b(lil|big|yung|young|da|tha)\b/i.test(name)) boost += 1.6;
+    if (name.trim().split(/\s+/).length <= 3) boost += 0.4;
+    if (harschn > softn) boost += 0.3;
   }
 
   // Electronic: digits/synth cues
   if (genre === "Electronic") {
-    if (/[0-9]/.test(name)) boost += 0.4;
-    if (/\b(808|909|synth|mono|stereo|electro|wave|bass)\b/i.test(name)) boost += 0.6;
+    if (/[0-9]/.test(name)) boost += 0.6;
+    if (/\b(808|909|synth|mono|stereo|electro|wave|bass)\b/i.test(name)) boost += 1.6;
+    if (harschn > softn) boost += 0.5;
   }
 
   // Country: places/roads & personal-name tradition
   if (genre === "Country") {
-    if (/\b(ridge|creek|hollow|county|road|river|prairie|barn)\b/i.test(name)) boost += 0.6;
+    if (/\b(ridge|creek|hollow|county|road|river|prairie|barn)\b/i.test(name)) boost += 1.4;
     if (looksLikePersonalNameStrict(name)) boost += 0.4;
     if (/\b(&|and)\b/i.test(name)) boost += 0.2;
+    if (softn >= harschn) boost += 0.4;
   }
 
   return Math.max(-1.5, Math.min(1.8, Number(boost.toFixed(2))));
