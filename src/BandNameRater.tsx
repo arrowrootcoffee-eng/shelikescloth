@@ -348,6 +348,7 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (softn >= harschn) boost += 0.6;
     if (name.trim().split(/\s+/).length <= 2) boost += 0.3;
     if (/(.)\1/.test(name)) boost += 0.2;
+    if (hasTheSandwich(name)) boost += 0.2;
   }
   if (genre === "K-Pop") {
     if (softn >= harschn) boost += 0.8;
@@ -355,26 +356,34 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (hasColors && /pink/i.test(name)) boost += 0.7;
     if (name.trim().split(/\s+/).length <= 2) boost += 0.4;
     if (/(.)\1/.test(name)) boost += 0.3;
+    if (hasTheSandwich(name)) boost += 0.3;
   }
   // Indie/Alt: rewards "___ the ___" and gentle phonetics
   if (genre === "Indie/Alt") {
-    if (hasTheSandwich(name)) boost += 0.8;
+    if (hasTheSandwich(name)) boost += 0.9;
     if (softn >= harschn) boost += 0.4;
   }
 
   // Metal/Rock: prefer harsh phonemes, darker words, longer/weightier looks
-  if (genre === "Metal" || genre === "Rock") {
+  if (genre === "Metal") {
     if (harschn > softn) boost += 1.7;
     if (/(black|doom|blood|void|skull|wrath|masto|mastodon)/i.test(name)) boost += 1.6;
     if (name.replace(/[^a-z]/gi, "").length >= 6) boost += 0.2;
+    if (hasTheSandwich(name)) boost += 0.5;
   }
-
+if (genre === "Rock") {
+    if (harschn > softn) boost += 1.5;
+    if (/(rock|fight|power|van|led|fighters|arctic|tenacious)/i.test(name)) boost += 1.7;
+    if (name.replace(/[^a-z]/gi, "").length >= 6) boost += 0.2;
+    if (hasTheSandwich(name)) boost += 0.5;
+  }
   // Punk: numbers, hyphens, geometric/technical vibe
   if (genre === "Punk") {
     if (/[0-9]/.test(name)) boost += 0.6;
     if(/[\-_/]/.test(name)) boost += 0.3;
     if (/(anarchy|radical|punk|spike|leather|anti|hair)/i.test(name)) boost += 1.3;
     if ((name.match(/[tkpqxz]/gi)?.length ?? 0) >= 2) boost += 0.4;
+    if (hasTheSandwich(name)) boost += 0.5;
   }
 
   // Hip Hop: short/stylized structures
@@ -382,6 +391,7 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (/\b(lil|big|yung|young|da|tha)\b/i.test(name)) boost += 1.9;
     if (name.trim().split(/\s+/).length <= 3) boost += 0.5;
     if (harschn > softn) boost += 0.3;
+    if (hasTheSandwich(name)) boost += 0.8;
   }
 
   // Electronic: digits/synth cues
@@ -389,6 +399,7 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (/[0-9]/.test(name)) boost += 0.6;
     if (/\b(808|909|synth|mono|stereo|electro|wave|bass)\b/i.test(name)) boost += 1.6;
     if (harschn > softn) boost += 0.5;
+    if (hasTheSandwich(name)) boost += 0.4;
   }
 
   // Country: places/roads & personal-name tradition
@@ -397,6 +408,7 @@ function boubaKikiBoost(name: string, genre: Genre) {
     if (looksLikePersonalNameStrict(name)) boost += 0.4;
     if (/\b(&|and)\b/i.test(name)) boost += 0.2;
     if (softn >= harschn) boost += 0.4;
+    if (hasTheSandwich(name)) boost += 0.4;
   }
 
   return Math.max(-1.5, Math.min(1.8, Number(boost.toFixed(2))));
