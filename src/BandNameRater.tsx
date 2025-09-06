@@ -345,12 +345,12 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Pop/K-Pop: favor soft/round, playful/cute, color pairings, compact names, repeated letters
   if (genre === "Pop") {
-    if (softn >= harschn) boost += 0.8;
+    if (softn >= harschn) boost += 0.6;
     if (name.trim().split(/\s+/).length <= 2) boost += 0.3;
     if (/(.)\1/.test(name)) boost += 0.2;
   }
   if (genre === "K-Pop") {
-    if (softn >= harschn) boost += 0.6;
+    if (softn >= harschn) boost += 0.8;
     const hasColors = tokens.some((t) => COLOR_WORDS.has(t));
     if (hasColors && /pink/i.test(name)) boost += 0.7;
     if (name.trim().split(/\s+/).length <= 2) boost += 0.4;
