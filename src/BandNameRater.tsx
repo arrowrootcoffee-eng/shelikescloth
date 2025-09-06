@@ -359,8 +359,8 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Metal/Rock: prefer harsh phonemes, darker words, longer/weightier looks
   if (genre === "Metal" || genre === "Rock") {
-    if (harschn > softn) boost += 1.3;
-    if (/(black|doom|blood|void|skull|wrath|masto|mastodon)/i.test(name)) boost += 0.6;
+    if (harschn > softn) boost += 1.7;
+    if (/(black|doom|blood|void|skull|wrath|masto|mastodon)/i.test(name)) boost += 1.6;
     if (name.replace(/[^a-z]/gi, "").length >= 6) boost += 0.2;
   }
 
@@ -373,8 +373,8 @@ function boubaKikiBoost(name: string, genre: Genre) {
 
   // Hip Hop: short/stylized structures
   if (genre === "Hip Hop") {
-    if (/\b(lil|big|yung|young|da|tha)\b/i.test(name)) boost += 1.6;
-    if (name.trim().split(/\s+/).length <= 3) boost += 0.4;
+    if (/\b(lil|big|yung|young|da|tha)\b/i.test(name)) boost += 1.9;
+    if (name.trim().split(/\s+/).length <= 3) boost += 0.5;
     if (harschn > softn) boost += 0.3;
   }
 
@@ -420,8 +420,8 @@ function scoreBand(
   let neg = 0; // negative contributions (penalties)
 
   // Positive structure/shape bonuses
-  if (isTwoWordBandName(name)) pos += 0.4;
-  if (hasTheSandwich(name)) pos += 1.5;
+  if (isTwoWordBandName(name)) pos += 0.46;
+  if (hasTheSandwich(name)) pos += 1.57;
   pos += homophoneBoost(name, tokens);
   pos += theSandwichContextBoost(name, tokens);
 
@@ -446,7 +446,7 @@ function scoreBand(
   neg += nonsensePenalty(name, tokens);
 
   // Gentle positive bias without touching negatives
-  const POS_MULT = 1.17; // ~+17% to positive attributes
+  const POS_MULT = 1.19; // ~+19% to positive attributes
   let score = 5 + POS_MULT * pos - neg;
 
   return Math.max(0, Math.min(10, Number(score.toFixed(2))));
