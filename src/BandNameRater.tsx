@@ -381,6 +381,7 @@ if (genre === "Rock") {
   if (genre === "Punk") {
     if (/[0-9]/.test(name)) boost += 0.6;
     if(/[\-_/]/.test(name)) boost += 0.3;
+    if (harschn > softn) boost += 1.2;
     if (/(anarchy|radical|punk|spike|leather|anti|hair)/i.test(name)) boost += 1.3;
     if ((name.match(/[tkpqxz]/gi)?.length ?? 0) >= 2) boost += 0.4;
     if (hasTheSandwich(name)) boost += 0.5;
